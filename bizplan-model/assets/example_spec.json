@@ -1,0 +1,228 @@
+{
+  "company": "가상회사 달구름키트",
+  "unit": 1000000,
+  "first_month": "2026-01",
+  "last_actual": "2026-12",
+  "plan_end": "2027-12",
+  "revenue_lines": [
+    {
+      "id": "subscriptions",
+      "label": "구독료",
+      "accounts": [
+        "월 구독료"
+      ],
+      "driver": "cohort",
+      "basis": "가상 고객대장의 월말 유료 고객과 월 해지율",
+      "params": {
+        "opening_customers": 80,
+        "new_customers": 6,
+        "churn": 0.025,
+        "arpu": 49000
+      }
+    },
+    {
+      "id": "kits",
+      "label": "키트 판매",
+      "accounts": [
+        "키트 매출"
+      ],
+      "driver": "price_volume",
+      "basis": "가상 판매계획의 월 판매 수량과 단가",
+      "params": {
+        "quantity": 120,
+        "price": 18000,
+        "annual_growth": 0.08
+      }
+    },
+    {
+      "id": "projects",
+      "label": "구축 용역",
+      "accounts": [
+        "구축 매출"
+      ],
+      "driver": "contracts",
+      "basis": "가상 계약목록과 미식별 신규 용역 추정",
+      "params": {
+        "new_monthly": 300000
+      }
+    },
+    {
+      "id": "support",
+      "label": "유지보수",
+      "accounts": [
+        "유지보수 매출"
+      ],
+      "driver": "growth",
+      "basis": "가상 유지보수 계약의 월평균 매출",
+      "params": {
+        "base_monthly": 720000,
+        "annual_growth": 0.04,
+        "seasonal": false
+      }
+    },
+    {
+      "id": "classes",
+      "label": "교육",
+      "accounts": [
+        "교육 매출"
+      ],
+      "driver": "manual",
+      "basis": "가상 교육 일정에 따른 월별 수강료",
+      "params": {
+        "monthly": {
+          "2027-03": 450000
+        }
+      }
+    }
+  ],
+  "cost_lines": [
+    {
+      "id": "materials",
+      "label": "키트 재료비",
+      "accounts": [
+        "키트 재료비"
+      ],
+      "section": "매출원가",
+      "method": "pct_of_revenue",
+      "basis": "가상 재료비율",
+      "params": {
+        "revenue_ids": [
+          "kits"
+        ],
+        "rate": 0.4
+      }
+    },
+    {
+      "id": "rent",
+      "label": "사무실 임차료",
+      "accounts": [
+        "임차료"
+      ],
+      "section": "판관비",
+      "method": "fixed_inflation",
+      "basis": "가상 월 임대료와 연 인상률",
+      "params": {
+        "base_monthly": 500000,
+        "annual_growth": 0.02
+      }
+    },
+    {
+      "id": "pay",
+      "label": "운영팀 급여",
+      "accounts": [
+        "운영팀 급여"
+      ],
+      "section": "판관비",
+      "method": "per_headcount",
+      "basis": "가상 운영팀 인원계획",
+      "params": {
+        "role": "운영"
+      }
+    },
+    {
+      "id": "events",
+      "label": "행사비",
+      "accounts": [
+        "행사비"
+      ],
+      "section": "판관비",
+      "method": "manual",
+      "basis": "가상 봄 행사 예산",
+      "params": {
+        "monthly": {
+          "2027-04": 250000
+        }
+      }
+    }
+  ],
+  "wages": {
+    "annual_raise": 0.03,
+    "roles": [
+      {
+        "role": "운영",
+        "count": 2,
+        "monthly_cost": 2200000,
+        "start": "2027-01",
+        "end": "2027-12"
+      }
+    ]
+  },
+  "investment": {
+    "monthly_capex": {
+      "2027-05": 2500000
+    },
+    "method": "straight_line",
+    "life_months": 60,
+    "annual_rate": 0,
+    "opening_net_assets": 3000000,
+    "existing_monthly_dep": 50000
+  },
+  "working_capital": {
+    "dso": 30,
+    "dio": 14,
+    "dpo": 20
+  },
+  "financing": {
+    "min_cash": 2500000,
+    "revolver_limit": 4500000,
+    "new_rate": 0.07,
+    "revolver_rate": 0.055,
+    "opening_cash": 3500000,
+    "facilities": [
+      {
+        "facility": "loan_a",
+        "lender": "가상 대주",
+        "type": "term",
+        "balance": 1200000,
+        "rate": 0.045,
+        "maturity": "2027-12",
+        "note": "가상 만기상환"
+      }
+    ],
+    "schedule": [
+      {
+        "facility": "loan_a",
+        "month": "2027-12",
+        "principal": 1200000
+      }
+    ]
+  },
+  "tax": {
+    "rate": 0.2,
+    "loss_carryforward": 0
+  },
+  "scenarios": {
+    "Base": {},
+    "Up": {
+      "multipliers": {
+        "kits": 1.1
+      }
+    },
+    "Down": {
+      "multipliers": {
+        "kits": 0.9
+      },
+      "additions": {
+        "rent": 100000
+      }
+    }
+  },
+  "cases": [
+    {
+      "label": "교육 수요 증가",
+      "scenario": "Base",
+      "additions": {
+        "classes": 200000
+      }
+    }
+  ],
+  "extensions": [
+    {
+      "line_id": "projects",
+      "label": "특별 구축 지원",
+      "monthly": {
+        "2027-06": 130000
+      }
+    }
+  ]
+}

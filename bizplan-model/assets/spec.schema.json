@@ -1,0 +1,2751 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Monthly business plan model specification",
+  "type": "object",
+  "properties": {
+    "company": {
+      "$ref": "#/$defs/text"
+    },
+    "unit": {
+      "type": "integer",
+      "minimum": 1,
+      "default": 1000000
+    },
+    "first_month": {
+      "$ref": "#/$defs/month"
+    },
+    "last_actual": {
+      "$ref": "#/$defs/month"
+    },
+    "plan_end": {
+      "$ref": "#/$defs/month"
+    },
+    "statements": {
+      "type": "object",
+      "properties": {
+        "bs": {
+          "type": "boolean"
+        }
+      },
+      "additionalProperties": false,
+      "default": {}
+    },
+    "revenue_lines": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/revenueLine"
+      },
+      "minItems": 1
+    },
+    "cost_lines": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/costLine"
+      }
+    },
+    "wages": {
+      "type": "object",
+      "properties": {
+        "annual_raise": {
+          "type": "number",
+          "minimum": -1,
+          "default": 0
+        },
+        "roles": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/role"
+          },
+          "default": []
+        },
+        "basis": {
+          "type": "string",
+          "default": ""
+        },
+        "retro": {
+          "type": "object",
+          "properties": {
+            "effective_from": {
+              "$ref": "#/$defs/month"
+            },
+            "settled": {
+              "$ref": "#/$defs/month"
+            },
+            "recognition": {
+              "enum": [
+                "accrual",
+                "lump"
+              ],
+              "default": "accrual"
+            }
+          },
+          "required": [
+            "effective_from",
+            "settled"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "additionalProperties": false,
+      "default": {}
+    },
+    "investment": {
+      "type": "object",
+      "properties": {
+        "monthly_capex": {
+          "type": "object",
+          "propertyNames": {
+            "$ref": "#/$defs/month"
+          },
+          "additionalProperties": {
+            "type": "number",
+            "minimum": 0
+          },
+          "default": {}
+        },
+        "method": {
+          "enum": [
+            "straight_line",
+            "declining"
+          ],
+          "default": "straight_line"
+        },
+        "life_months": {
+          "type": "integer",
+          "minimum": 1,
+          "default": 60
+        },
+        "annual_rate": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1,
+          "default": 0
+        },
+        "opening_net_assets": {
+          "type": "number",
+          "minimum": 0,
+          "default": 0
+        },
+        "existing_monthly_dep": {
+          "type": "number",
+          "minimum": 0,
+          "default": 0
+        },
+        "basis": {
+          "type": "string",
+          "default": ""
+        },
+        "depreciation_accounts": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/text"
+          },
+          "uniqueItems": true,
+          "default": []
+        },
+        "dep_starts": {
+          "enum": [
+            "same_month",
+            "next_month"
+          ],
+          "default": "next_month"
+        },
+        "asset_classes": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": [
+              "asset_class",
+              "method",
+              "life_months"
+            ],
+            "properties": {
+              "asset_class": {
+                "$ref": "#/$defs/text"
+              },
+              "whole_units": {
+                "type": "boolean",
+                "default": false
+              },
+              "method": {
+                "enum": [
+                  "straight_line",
+                  "declining"
+                ]
+              },
+              "life_months": {
+                "type": "integer",
+                "minimum": 1
+              },
+              "annual_rate": {
+                "type": "number",
+                "minimum": 0,
+                "maximum": 1
+              },
+              "purchases": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "required": [
+                    "month",
+                    "quantity",
+                    "unit_price"
+                  ],
+                  "properties": {
+                    "month": {
+                      "$ref": "#/$defs/month"
+                    },
+                    "quantity": {
+                      "type": "number",
+                      "minimum": 0
+                    },
+                    "unit_price": {
+                      "type": "number",
+                      "minimum": 0
+                    }
+                  },
+                  "additionalProperties": false
+                },
+                "default": []
+              },
+              "opening": {
+                "type": "object",
+                "required": [
+                  "cost",
+                  "accumulated_dep",
+                  "remaining_life_months"
+                ],
+                "properties": {
+                  "cost": {
+                    "type": "number",
+                    "minimum": 0
+                  },
+                  "accumulated_dep": {
+                    "type": "number",
+                    "minimum": 0
+                  },
+                  "remaining_life_months": {
+                    "type": "integer",
+                    "minimum": 1
+                  }
+                },
+                "additionalProperties": false
+              }
+            },
+            "additionalProperties": false
+          },
+          "default": []
+        }
+      },
+      "additionalProperties": false,
+      "default": {}
+    },
+    "working_capital": {
+      "type": "object",
+      "properties": {
+        "dso": {
+          "type": "number",
+          "minimum": 0,
+          "default": 0
+        },
+        "dio": {
+          "type": "number",
+          "minimum": 0,
+          "default": 0
+        },
+        "dpo": {
+          "type": "number",
+          "minimum": 0,
+          "default": 0
+        },
+        "basis": {
+          "type": "string",
+          "default": ""
+        },
+        "ap_base": {
+          "enum": [
+            "purchases",
+            "cogs"
+          ],
+          "default": "purchases"
+        },
+        "day_basis": {
+          "enum": [
+            "calendar",
+            "month30"
+          ],
+          "default": "calendar"
+        },
+        "cash_revenue_lines": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/text"
+          },
+          "minItems": 1,
+          "uniqueItems": true
+        },
+        "dio_base_lines": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/text"
+          },
+          "minItems": 1,
+          "uniqueItems": true
+        },
+        "dpo_base_lines": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/text"
+          },
+          "minItems": 1,
+          "uniqueItems": true
+        }
+      },
+      "additionalProperties": false,
+      "default": {}
+    },
+    "financing": {
+      "type": "object",
+      "properties": {
+        "min_cash": {
+          "type": "number",
+          "minimum": 0,
+          "default": 0
+        },
+        "revolver_limit": {
+          "type": "number",
+          "minimum": 0,
+          "default": 0
+        },
+        "opening_cash": {
+          "type": "number",
+          "minimum": 0,
+          "default": 0
+        },
+        "new_rate": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1,
+          "default": 0
+        },
+        "revolver_rate": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1,
+          "default": 0
+        },
+        "facilities": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/facility"
+          },
+          "default": []
+        },
+        "schedule": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/repayment"
+          },
+          "default": []
+        },
+        "basis": {
+          "type": "string",
+          "default": ""
+        },
+        "funding_enabled": {
+          "type": "boolean",
+          "default": true
+        },
+        "maturity_treatment": {
+          "enum": [
+            "repay",
+            "rollover"
+          ],
+          "default": "repay"
+        }
+      },
+      "additionalProperties": false,
+      "default": {}
+    },
+    "tax": {
+      "type": "object",
+      "properties": {
+        "rate": {},
+        "loss_carryforward": {
+          "type": "number",
+          "minimum": 0
+        },
+        "basis": {
+          "type": "string",
+          "default": ""
+        },
+        "fy_start_month": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 12,
+          "default": 1
+        },
+        "is_sme": {
+          "type": "boolean"
+        },
+        "sme": {
+          "type": "boolean"
+        },
+        "minimum_tax": {
+          "type": "object",
+          "properties": {
+            "apply": {
+              "type": "boolean",
+              "default": true
+            },
+            "rate": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "const": "auto"
+                },
+                {
+                  "type": "number",
+                  "minimum": 0,
+                  "maximum": 1
+                }
+              ],
+              "default": "auto"
+            }
+          },
+          "additionalProperties": false
+        },
+        "credit_balance_as_of": {
+          "$ref": "#/$defs/month"
+        },
+        "credit_vintages": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "label": {
+                "$ref": "#/$defs/text"
+              },
+              "year": {
+                "type": "integer",
+                "minimum": 1900,
+                "maximum": 9999
+              },
+              "amount": {
+                "type": "number",
+                "minimum": 0
+              },
+              "minimum_tax_applies": {
+                "type": "boolean"
+              },
+              "rural_tax": {
+                "type": "boolean"
+              }
+            },
+            "additionalProperties": false,
+            "required": [
+              "year",
+              "label",
+              "amount",
+              "minimum_tax_applies",
+              "rural_tax"
+            ]
+          }
+        },
+        "new_credits": {
+          "type": "object",
+          "propertyNames": {
+            "type": "string",
+            "pattern": "^[1-9][0-9]{3}$"
+          },
+          "additionalProperties": {
+            "anyOf": [
+              {
+                "type": "number",
+                "minimum": 0
+              },
+              {
+                "$ref": "#/$defs/new_tax_credit"
+              },
+              {
+                "type": "array",
+                "items": {
+                  "$ref": "#/$defs/new_tax_credit"
+                }
+              }
+            ]
+          }
+        },
+        "corporation_type": {
+          "enum": [
+            "general",
+            "small_filing"
+          ],
+          "default": "general"
+        },
+        "include_local": {
+          "type": "boolean",
+          "default": true
+        },
+        "installments": {
+          "type": "boolean",
+          "default": false
+        },
+        "faithful_filing": {
+          "type": "boolean",
+          "default": false
+        },
+        "loss_limit_override": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "founded_fy": {
+          "$ref": "#/$defs/month"
+        },
+        "short_fys": {
+          "type": "object",
+          "propertyNames": {
+            "$ref": "#/$defs/month"
+          },
+          "additionalProperties": {
+            "$ref": "#/$defs/month"
+          },
+          "default": {}
+        },
+        "prior": {
+          "type": "object",
+          "properties": {
+            "assessed_tax": {
+              "type": "number",
+              "minimum": 0
+            },
+            "months": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 12
+            },
+            "is_sme": {
+              "type": "boolean"
+            },
+            "credits": {
+              "type": "number",
+              "minimum": 0,
+              "default": 0
+            },
+            "withholding": {
+              "type": "number",
+              "minimum": 0,
+              "default": 0
+            },
+            "ad_hoc": {
+              "type": "number",
+              "minimum": 0,
+              "default": 0
+            }
+          },
+          "additionalProperties": false,
+          "default": {}
+        },
+        "opening": {
+          "type": "object",
+          "properties": {
+            "national_payable": {
+              "type": "number",
+              "minimum": 0
+            },
+            "local_payable": {
+              "type": "number",
+              "minimum": 0
+            },
+            "national_prepaid": {
+              "type": "number",
+              "minimum": 0
+            },
+            "local_prepaid": {
+              "type": "number",
+              "minimum": 0
+            }
+          },
+          "additionalProperties": false,
+          "default": {}
+        },
+        "annual": {
+          "type": "object",
+          "propertyNames": {
+            "$ref": "#/$defs/month"
+          },
+          "additionalProperties": {
+            "type": "object",
+            "properties": {
+              "additions": {
+                "type": "number",
+                "minimum": 0
+              },
+              "deductions": {
+                "type": "number",
+                "minimum": 0
+              },
+              "non_taxable": {
+                "type": "number",
+                "minimum": 0
+              },
+              "income_deduction": {
+                "type": "number",
+                "minimum": 0
+              },
+              "credits": {
+                "type": "number",
+                "minimum": 0
+              },
+              "withholding": {
+                "type": "number",
+                "minimum": 0
+              },
+              "ad_hoc": {
+                "type": "number",
+                "minimum": 0
+              },
+              "interim_paid": {
+                "type": "number",
+                "minimum": 0
+              },
+              "installment_amount": {
+                "type": "number",
+                "minimum": 0
+              }
+            },
+            "additionalProperties": false
+          },
+          "default": {}
+        },
+        "loss_vintages": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "fy_start": {
+                "anyOf": [
+                  {
+                    "$ref": "#/$defs/month"
+                  },
+                  {
+                    "type": "string",
+                    "const": "unknown"
+                  }
+                ]
+              },
+              "amount": {
+                "type": "number",
+                "minimum": 0
+              }
+            },
+            "additionalProperties": false,
+            "required": [
+              "fy_start",
+              "amount"
+            ]
+          },
+          "default": []
+        },
+        "rate_tables": {
+          "type": "object",
+          "properties": {
+            "pre2026": {
+              "type": "object",
+              "properties": {
+                "thresholds": {
+                  "type": "array",
+                  "items": {
+                    "type": "number",
+                    "minimum": 0
+                  },
+                  "minItems": 3,
+                  "maxItems": 3
+                },
+                "national_general": {
+                  "type": "array",
+                  "items": {
+                    "type": "number",
+                    "minimum": 0,
+                    "maximum": 1
+                  },
+                  "minItems": 4,
+                  "maxItems": 4
+                },
+                "national_small_filing": {
+                  "type": "array",
+                  "items": {
+                    "type": "number",
+                    "minimum": 0,
+                    "maximum": 1
+                  },
+                  "minItems": 4,
+                  "maxItems": 4
+                },
+                "local_general": {
+                  "type": "array",
+                  "items": {
+                    "type": "number",
+                    "minimum": 0,
+                    "maximum": 1
+                  },
+                  "minItems": 4,
+                  "maxItems": 4
+                },
+                "local_small_filing": {
+                  "type": "array",
+                  "items": {
+                    "type": "number",
+                    "minimum": 0,
+                    "maximum": 1
+                  },
+                  "minItems": 4,
+                  "maxItems": 4
+                }
+              },
+              "additionalProperties": false
+            },
+            "from2026": {
+              "type": "object",
+              "properties": {
+                "thresholds": {
+                  "type": "array",
+                  "items": {
+                    "type": "number",
+                    "minimum": 0
+                  },
+                  "minItems": 3,
+                  "maxItems": 3
+                },
+                "national_general": {
+                  "type": "array",
+                  "items": {
+                    "type": "number",
+                    "minimum": 0,
+                    "maximum": 1
+                  },
+                  "minItems": 4,
+                  "maxItems": 4
+                },
+                "national_small_filing": {
+                  "type": "array",
+                  "items": {
+                    "type": "number",
+                    "minimum": 0,
+                    "maximum": 1
+                  },
+                  "minItems": 4,
+                  "maxItems": 4
+                },
+                "local_general": {
+                  "type": "array",
+                  "items": {
+                    "type": "number",
+                    "minimum": 0,
+                    "maximum": 1
+                  },
+                  "minItems": 4,
+                  "maxItems": 4
+                },
+                "local_small_filing": {
+                  "type": "array",
+                  "items": {
+                    "type": "number",
+                    "minimum": 0,
+                    "maximum": 1
+                  },
+                  "minItems": 4,
+                  "maxItems": 4
+                }
+              },
+              "additionalProperties": false
+            }
+          },
+          "additionalProperties": false,
+          "default": {}
+        },
+        "paid_to_date": {
+          "type": "object",
+          "properties": {
+            "national": {
+              "type": "number",
+              "minimum": 0
+            },
+            "local": {
+              "type": "number",
+              "minimum": 0
+            }
+          },
+          "additionalProperties": false,
+          "default": {}
+        }
+      },
+      "additionalProperties": false,
+      "default": {}
+    },
+    "scenarios": {
+      "type": "object",
+      "properties": {
+        "Base": {
+          "$ref": "#/$defs/scenario"
+        },
+        "Up": {
+          "$ref": "#/$defs/scenario"
+        },
+        "Down": {
+          "$ref": "#/$defs/scenario"
+        }
+      },
+      "additionalProperties": false,
+      "default": {}
+    },
+    "cases": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "label": {
+            "$ref": "#/$defs/text"
+          },
+          "scenario": {
+            "enum": [
+              "Base",
+              "Up",
+              "Down"
+            ]
+          },
+          "multipliers": {
+            "type": "object",
+            "propertyNames": {
+              "$ref": "#/$defs/text"
+            },
+            "additionalProperties": {
+              "type": "number",
+              "minimum": 0
+            },
+            "default": {}
+          },
+          "additions": {
+            "type": "object",
+            "propertyNames": {
+              "$ref": "#/$defs/text"
+            },
+            "additionalProperties": {
+              "type": "number"
+            },
+            "default": {}
+          },
+          "basis": {
+            "type": "string",
+            "default": ""
+          },
+          "initiatives": {
+            "type": "array",
+            "items": {
+              "$ref": "#/$defs/text"
+            },
+            "uniqueItems": true
+          }
+        },
+        "additionalProperties": false,
+        "required": [
+          "label",
+          "scenario"
+        ]
+      },
+      "maxItems": 7,
+      "default": []
+    },
+    "extensions": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "line_id": {
+            "$ref": "#/$defs/text"
+          },
+          "label": {
+            "$ref": "#/$defs/text"
+          },
+          "monthly": {
+            "$ref": "#/$defs/monthly"
+          }
+        },
+        "additionalProperties": false,
+        "required": [
+          "line_id",
+          "label"
+        ]
+      },
+      "default": []
+    },
+    "non_operating": {
+      "type": "object",
+      "properties": {
+        "income_monthly": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "object",
+              "propertyNames": {
+                "$ref": "#/$defs/month"
+              },
+              "additionalProperties": {
+                "type": "number"
+              }
+            }
+          ]
+        },
+        "other_expense_monthly": {
+          "anyOf": [
+            {
+              "type": "number",
+              "minimum": 0
+            },
+            {
+              "type": "object",
+              "propertyNames": {
+                "$ref": "#/$defs/month"
+              },
+              "additionalProperties": {
+                "type": "number",
+                "minimum": 0
+              }
+            }
+          ]
+        },
+        "basis": {
+          "type": "string",
+          "default": ""
+        }
+      },
+      "additionalProperties": false,
+      "default": {}
+    },
+    "metrics": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "$ref": "#/$defs/text"
+          },
+          "label": {
+            "$ref": "#/$defs/text"
+          },
+          "lines": {
+            "type": "object",
+            "propertyNames": {
+              "$ref": "#/$defs/text"
+            },
+            "additionalProperties": {
+              "anyOf": [
+                {
+                  "type": "number",
+                  "minimum": 0
+                },
+                {
+                  "type": "object",
+                  "properties": {
+                    "base": {
+                      "const": "actual"
+                    },
+                    "monthly": {
+                      "type": "object",
+                      "propertyNames": {
+                        "$ref": "#/$defs/month"
+                      },
+                      "additionalProperties": {
+                        "type": "number",
+                        "minimum": 0
+                      }
+                    }
+                  },
+                  "additionalProperties": false,
+                  "required": [
+                    "base"
+                  ]
+                }
+              ]
+            }
+          }
+        },
+        "additionalProperties": false,
+        "required": [
+          "id",
+          "label",
+          "lines"
+        ]
+      },
+      "default": []
+    },
+    "initiatives": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "$ref": "#/$defs/text"
+          },
+          "name": {
+            "$ref": "#/$defs/text"
+          },
+          "line": {
+            "$ref": "#/$defs/text"
+          },
+          "enabled": {
+            "type": "boolean",
+            "default": true
+          },
+          "start": {
+            "$ref": "#/$defs/month"
+          },
+          "end": {
+            "$ref": "#/$defs/month"
+          },
+          "activity_delta": {
+            "type": "number",
+            "default": 0
+          },
+          "yield": {
+            "type": "number",
+            "minimum": 0
+          },
+          "price": {
+            "type": "number",
+            "minimum": 0
+          },
+          "price_pct": {
+            "type": "number",
+            "minimum": -1,
+            "default": 0
+          },
+          "yield_pct": {
+            "type": "number",
+            "minimum": -1,
+            "default": 0
+          },
+          "metric_factors": {
+            "type": "object",
+            "propertyNames": {
+              "$ref": "#/$defs/text"
+            },
+            "additionalProperties": {
+              "type": "number",
+              "minimum": 0
+            }
+          },
+          "cost_line": {
+            "$ref": "#/$defs/text"
+          },
+          "fixed_cost": {
+            "type": "number",
+            "default": 0
+          }
+        },
+        "additionalProperties": false,
+        "required": [
+          "id",
+          "name",
+          "line",
+          "start"
+        ]
+      },
+      "default": []
+    },
+    "initiative_blank_rows": {
+      "type": "integer",
+      "minimum": 0,
+      "default": 10
+    },
+    "equity": {
+      "type": "object",
+      "properties": {
+        "dividends": {
+          "type": "object",
+          "propertyNames": {
+            "$ref": "#/$defs/month"
+          },
+          "additionalProperties": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "default": {}
+        },
+        "contributions": {
+          "type": "object",
+          "propertyNames": {
+            "$ref": "#/$defs/month"
+          },
+          "additionalProperties": {
+            "type": "integer"
+          },
+          "default": {}
+        }
+      },
+      "additionalProperties": false,
+      "default": {}
+    },
+    "other_items": {
+      "type": "array",
+      "default": [],
+      "items": {
+        "type": "object",
+        "properties": {
+          "label": {
+            "$ref": "#/$defs/text"
+          },
+          "bs_account": {
+            "$ref": "#/$defs/text"
+          },
+          "month": {
+            "$ref": "#/$defs/month"
+          },
+          "amount": {
+            "type": "integer"
+          },
+          "bs_section": {
+            "enum": [
+              "유동자산",
+              "비유동자산",
+              "유동부채",
+              "비유동부채"
+            ]
+          }
+        },
+        "required": [
+          "label",
+          "bs_account",
+          "month",
+          "amount"
+        ],
+        "additionalProperties": false
+      }
+    }
+  },
+  "additionalProperties": false,
+  "required": [
+    "company",
+    "first_month",
+    "last_actual",
+    "plan_end",
+    "revenue_lines",
+    "cost_lines"
+  ],
+  "$defs": {
+    "text": {
+      "type": "string",
+      "pattern": "^\\S(?:[\\s\\S]*\\S)?$"
+    },
+    "month": {
+      "type": "string",
+      "pattern": "^(?!0000)[0-9]{4}-(0[1-9]|1[0-2])$"
+    },
+    "monthly": {
+      "type": "object",
+      "propertyNames": {
+        "$ref": "#/$defs/month"
+      },
+      "additionalProperties": {
+        "type": "number"
+      },
+      "default": {}
+    },
+    "revenueLine": {
+      "oneOf": [
+        {
+          "type": "object",
+          "properties": {
+            "id": {
+              "$ref": "#/$defs/text"
+            },
+            "label": {
+              "$ref": "#/$defs/text"
+            },
+            "accounts": {
+              "type": "array",
+              "items": {
+                "$ref": "#/$defs/text"
+              },
+              "uniqueItems": true
+            },
+            "basis": {
+              "type": "string",
+              "default": ""
+            },
+            "driver": {
+              "const": "growth"
+            },
+            "params": {
+              "type": "object",
+              "properties": {
+                "base_monthly": {
+                  "type": "number",
+                  "minimum": 0,
+                  "default": 0
+                },
+                "annual_growth": {
+                  "type": "number",
+                  "minimum": -1,
+                  "default": 0
+                },
+                "seasonal": {
+                  "type": "boolean",
+                  "default": false
+                }
+              },
+              "additionalProperties": false,
+              "default": {}
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "id",
+            "label",
+            "accounts",
+            "driver"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "id": {
+              "$ref": "#/$defs/text"
+            },
+            "label": {
+              "$ref": "#/$defs/text"
+            },
+            "accounts": {
+              "type": "array",
+              "items": {
+                "$ref": "#/$defs/text"
+              },
+              "uniqueItems": true
+            },
+            "basis": {
+              "type": "string",
+              "default": ""
+            },
+            "driver": {
+              "const": "price_volume"
+            },
+            "params": {
+              "type": "object",
+              "properties": {
+                "quantity": {
+                  "type": "number",
+                  "minimum": 0,
+                  "default": 0
+                },
+                "price": {
+                  "type": "number",
+                  "minimum": 0,
+                  "default": 0
+                },
+                "annual_growth": {
+                  "type": "number",
+                  "minimum": -1,
+                  "default": 0
+                },
+                "seasonal": {
+                  "type": "boolean",
+                  "default": false
+                },
+                "monthly": {
+                  "type": "object",
+                  "propertyNames": {
+                    "$ref": "#/$defs/month"
+                  },
+                  "additionalProperties": {
+                    "type": "object",
+                    "properties": {
+                      "quantity": {
+                        "type": "number",
+                        "minimum": 0
+                      },
+                      "price": {
+                        "type": "number",
+                        "minimum": 0
+                      }
+                    },
+                    "additionalProperties": false,
+                    "minProperties": 1
+                  },
+                  "default": {}
+                }
+              },
+              "additionalProperties": false,
+              "default": {}
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "id",
+            "label",
+            "accounts",
+            "driver"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "id": {
+              "$ref": "#/$defs/text"
+            },
+            "label": {
+              "$ref": "#/$defs/text"
+            },
+            "accounts": {
+              "type": "array",
+              "items": {
+                "$ref": "#/$defs/text"
+              },
+              "uniqueItems": true
+            },
+            "basis": {
+              "type": "string",
+              "default": ""
+            },
+            "driver": {
+              "const": "contracts"
+            },
+            "params": {
+              "type": "object",
+              "properties": {
+                "new_monthly": {
+                  "type": "number",
+                  "minimum": 0,
+                  "default": 0
+                },
+                "new_monthly_recurring": {
+                  "type": "boolean",
+                  "default": false
+                },
+                "churn": {
+                  "type": "number",
+                  "minimum": 0,
+                  "maximum": 1,
+                  "default": 0
+                },
+                "renewal": {
+                  "type": "object",
+                  "properties": {
+                    "probability": {
+                      "type": "number",
+                      "minimum": 0,
+                      "maximum": 1
+                    },
+                    "term_months": {
+                      "type": "integer",
+                      "minimum": 1
+                    }
+                  },
+                  "required": [
+                    "probability",
+                    "term_months"
+                  ],
+                  "additionalProperties": false
+                }
+              },
+              "additionalProperties": false,
+              "default": {}
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "id",
+            "label",
+            "accounts",
+            "driver"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "id": {
+              "$ref": "#/$defs/text"
+            },
+            "label": {
+              "$ref": "#/$defs/text"
+            },
+            "accounts": {
+              "type": "array",
+              "items": {
+                "$ref": "#/$defs/text"
+              },
+              "uniqueItems": true
+            },
+            "basis": {
+              "type": "string",
+              "default": ""
+            },
+            "driver": {
+              "const": "cohort"
+            },
+            "params": {
+              "type": "object",
+              "properties": {
+                "opening_customers": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "default": 0
+                },
+                "new_customers": {
+                  "type": "number",
+                  "minimum": 0,
+                  "default": 0
+                },
+                "churn": {
+                  "type": "number",
+                  "minimum": 0,
+                  "maximum": 1,
+                  "default": 0
+                },
+                "arpu": {
+                  "type": "number",
+                  "minimum": 0,
+                  "default": 0
+                },
+                "new_probability": {
+                  "type": "number",
+                  "minimum": 0,
+                  "maximum": 1,
+                  "default": 1
+                }
+              },
+              "additionalProperties": false,
+              "default": {}
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "id",
+            "label",
+            "accounts",
+            "driver"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "id": {
+              "$ref": "#/$defs/text"
+            },
+            "label": {
+              "$ref": "#/$defs/text"
+            },
+            "accounts": {
+              "type": "array",
+              "items": {
+                "$ref": "#/$defs/text"
+              },
+              "uniqueItems": true
+            },
+            "basis": {
+              "type": "string",
+              "default": ""
+            },
+            "driver": {
+              "const": "manual"
+            },
+            "params": {
+              "type": "object",
+              "properties": {
+                "nonnegative": {
+                  "type": "boolean",
+                  "default": false
+                },
+                "monthly": {
+                  "$ref": "#/$defs/monthly"
+                }
+              },
+              "additionalProperties": false,
+              "default": {}
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "id",
+            "label",
+            "accounts",
+            "driver"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "id": {
+              "$ref": "#/$defs/text"
+            },
+            "label": {
+              "$ref": "#/$defs/text"
+            },
+            "accounts": {
+              "type": "array",
+              "items": {
+                "$ref": "#/$defs/text"
+              },
+              "uniqueItems": true
+            },
+            "basis": {
+              "type": "string",
+              "default": ""
+            },
+            "driver": {
+              "const": "pct_of_line"
+            },
+            "params": {
+              "type": "object",
+              "properties": {
+                "line_ids": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/$defs/text"
+                  },
+                  "uniqueItems": true,
+                  "minItems": 1
+                },
+                "rate": {
+                  "type": "number",
+                  "default": 0
+                }
+              },
+              "additionalProperties": false,
+              "required": [
+                "line_ids"
+              ]
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "id",
+            "label",
+            "accounts",
+            "driver",
+            "params"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "id": {
+              "$ref": "#/$defs/text"
+            },
+            "label": {
+              "$ref": "#/$defs/text"
+            },
+            "accounts": {
+              "type": "array",
+              "items": {
+                "$ref": "#/$defs/text"
+              },
+              "uniqueItems": true
+            },
+            "basis": {
+              "type": "string",
+              "default": ""
+            },
+            "driver": {
+              "const": "activity"
+            },
+            "params": {
+              "type": "object",
+              "properties": {
+                "activity": {
+                  "type": "object",
+                  "properties": {
+                    "base": {
+                      "enum": [
+                        "last_12m",
+                        "seasonal_avg",
+                        "manual"
+                      ],
+                      "default": "last_12m"
+                    },
+                    "start": {
+                      "$ref": "#/$defs/month"
+                    },
+                    "end": {
+                      "$ref": "#/$defs/month"
+                    },
+                    "monthly": {
+                      "type": "object",
+                      "propertyNames": {
+                        "$ref": "#/$defs/month"
+                      },
+                      "additionalProperties": {
+                        "type": "number",
+                        "minimum": 0
+                      }
+                    }
+                  },
+                  "additionalProperties": false,
+                  "default": {}
+                },
+                "yield": {
+                  "type": "object",
+                  "properties": {
+                    "base": {
+                      "enum": [
+                        "last_12m",
+                        "seasonal_avg",
+                        "manual"
+                      ],
+                      "default": "last_12m"
+                    },
+                    "start": {
+                      "$ref": "#/$defs/month"
+                    },
+                    "end": {
+                      "$ref": "#/$defs/month"
+                    },
+                    "monthly": {
+                      "type": "object",
+                      "propertyNames": {
+                        "$ref": "#/$defs/month"
+                      },
+                      "additionalProperties": {
+                        "type": "number",
+                        "minimum": 0
+                      }
+                    }
+                  },
+                  "additionalProperties": false,
+                  "default": {}
+                },
+                "price": {
+                  "type": "object",
+                  "properties": {
+                    "base": {
+                      "enum": [
+                        "last_12m",
+                        "seasonal_avg",
+                        "manual",
+                        "base_month"
+                      ],
+                      "default": "last_12m"
+                    },
+                    "start": {
+                      "$ref": "#/$defs/month"
+                    },
+                    "end": {
+                      "$ref": "#/$defs/month"
+                    },
+                    "monthly": {
+                      "type": "object",
+                      "propertyNames": {
+                        "$ref": "#/$defs/month"
+                      },
+                      "additionalProperties": {
+                        "type": "number",
+                        "minimum": 0
+                      }
+                    },
+                    "month": {
+                      "$ref": "#/$defs/month"
+                    },
+                    "seasonal": {
+                      "type": "boolean",
+                      "default": false
+                    }
+                  },
+                  "additionalProperties": false,
+                  "default": {}
+                },
+                "increment": {
+                  "type": "object",
+                  "properties": {
+                    "label": {"$ref": "#/$defs/text"},
+                    "monthly": {
+                      "type": "object",
+                      "propertyNames": {"$ref": "#/$defs/month"},
+                      "additionalProperties": {"type": "number", "minimum": 0}
+                    },
+                    "included_monthly": {
+                      "type": "object",
+                      "propertyNames": {"$ref": "#/$defs/month"},
+                      "additionalProperties": {"type": "number", "minimum": 0},
+                      "default": {}
+                    },
+                    "whole": {"type": "boolean", "default": false},
+                    "yield_per_activity": {"type": "number", "minimum": 0},
+                    "metric_factors": {
+                      "type": "object",
+                      "propertyNames": {"$ref": "#/$defs/text"},
+                      "additionalProperties": {"type": "number", "minimum": 0},
+                      "default": {}
+                    }
+                  },
+                  "required": ["label", "monthly", "yield_per_activity"],
+                  "additionalProperties": false
+                },
+                "yield_growth": {
+                  "type": "number",
+                  "minimum": -1,
+                  "default": 0
+                },
+                "price_steps": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "month": {
+                        "$ref": "#/$defs/month"
+                      },
+                      "pct": {
+                        "type": "number",
+                        "exclusiveMinimum": -1
+                      },
+                      "basis": {
+                        "$ref": "#/$defs/text"
+                      },
+                      "apply_to": {
+                        "enum": [
+                          "all",
+                          "pre_step_months"
+                        ],
+                        "default": "all"
+                      }
+                    },
+                    "additionalProperties": false,
+                    "required": [
+                      "month",
+                      "pct",
+                      "basis"
+                    ]
+                  },
+                  "default": []
+                }
+              },
+              "additionalProperties": false,
+              "default": {}
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "id",
+            "label",
+            "accounts",
+            "driver"
+          ]
+        }
+      ]
+    },
+    "costLine": {
+      "oneOf": [
+        {
+          "type": "object",
+          "properties": {
+            "id": {
+              "$ref": "#/$defs/text"
+            },
+            "label": {
+              "$ref": "#/$defs/text"
+            },
+            "accounts": {
+              "type": "array",
+              "items": {
+                "$ref": "#/$defs/text"
+              },
+              "uniqueItems": true
+            },
+            "basis": {
+              "type": "string",
+              "default": ""
+            },
+            "section": {
+              "enum": [
+                "매출원가",
+                "판관비"
+              ]
+            },
+            "method": {
+              "const": "pct_of_revenue"
+            },
+            "params": {
+              "type": "object",
+              "properties": {
+                "revenue_ids": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/$defs/text"
+                  },
+                  "minItems": 1,
+                  "uniqueItems": true
+                },
+                "rate": {
+                  "type": "number",
+                  "minimum": 0,
+                  "default": 0
+                },
+                "base_lines": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/$defs/text"
+                  },
+                  "uniqueItems": true,
+                  "minItems": 1
+                }
+              },
+              "additionalProperties": false,
+              "anyOf": [
+                {
+                  "type": "object",
+                  "required": [
+                    "revenue_ids"
+                  ]
+                },
+                {
+                  "type": "object",
+                  "required": [
+                    "base_lines"
+                  ]
+                }
+              ]
+            },
+            "noncash": {
+              "type": "boolean",
+              "default": false
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "id",
+            "label",
+            "accounts",
+            "section",
+            "method",
+            "params"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "id": {
+              "$ref": "#/$defs/text"
+            },
+            "label": {
+              "$ref": "#/$defs/text"
+            },
+            "accounts": {
+              "type": "array",
+              "items": {
+                "$ref": "#/$defs/text"
+              },
+              "uniqueItems": true
+            },
+            "basis": {
+              "type": "string",
+              "default": ""
+            },
+            "section": {
+              "enum": [
+                "매출원가",
+                "판관비"
+              ]
+            },
+            "method": {
+              "const": "fixed_inflation"
+            },
+            "params": {
+              "type": "object",
+              "properties": {
+                "activity_increment": {
+                  "type": "object",
+                  "properties": {
+                    "line": {"$ref": "#/$defs/text"},
+                    "unit_cost": {"type": "number", "minimum": 0}
+                  },
+                  "required": ["line", "unit_cost"],
+                  "additionalProperties": false
+                },
+                "monthly": {
+                  "type": "object",
+                  "propertyNames": {"$ref": "#/$defs/month"},
+                  "additionalProperties": {"type": "number", "minimum": 0}
+                },
+                "base_monthly": {
+                  "type": "number",
+                  "minimum": 0,
+                  "default": 0
+                },
+                "annual_growth": {
+                  "type": "number",
+                  "minimum": -1,
+                  "default": 0
+                },
+                "months": {
+                  "type": "array",
+                  "items": {
+                    "type": "integer",
+                    "minimum": 1,
+                    "maximum": 12
+                  },
+                  "uniqueItems": true,
+                  "minItems": 1
+                },
+                "role": {
+                  "$ref": "#/$defs/text"
+                }
+              },
+              "additionalProperties": false,
+              "default": {}
+            },
+            "noncash": {
+              "type": "boolean",
+              "default": false
+            },
+            "follows_wage_raise": {
+              "type": "boolean",
+              "default": false
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "id",
+            "label",
+            "accounts",
+            "section",
+            "method"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "id": {
+              "$ref": "#/$defs/text"
+            },
+            "label": {
+              "$ref": "#/$defs/text"
+            },
+            "accounts": {
+              "type": "array",
+              "items": {
+                "$ref": "#/$defs/text"
+              },
+              "uniqueItems": true
+            },
+            "basis": {
+              "type": "string",
+              "default": ""
+            },
+            "section": {
+              "enum": [
+                "매출원가",
+                "판관비"
+              ]
+            },
+            "method": {
+              "const": "per_headcount"
+            },
+            "params": {
+              "type": "object",
+              "properties": {
+                "monthly_cost": {
+                  "type": "number",
+                  "minimum": 0
+                },
+                "role": {
+                  "$ref": "#/$defs/text"
+                }
+              },
+              "additionalProperties": false,
+              "default": {}
+            },
+            "noncash": {
+              "type": "boolean",
+              "default": false
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "id",
+            "label",
+            "accounts",
+            "section",
+            "method"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "id": {
+              "$ref": "#/$defs/text"
+            },
+            "label": {
+              "$ref": "#/$defs/text"
+            },
+            "accounts": {
+              "type": "array",
+              "items": {
+                "$ref": "#/$defs/text"
+              },
+              "uniqueItems": true
+            },
+            "basis": {
+              "type": "string",
+              "default": ""
+            },
+            "section": {
+              "enum": [
+                "매출원가",
+                "판관비"
+              ]
+            },
+            "method": {
+              "const": "manual"
+            },
+            "params": {
+              "type": "object",
+              "properties": {
+                "monthly": {
+                  "$ref": "#/$defs/monthly"
+                }
+              },
+              "additionalProperties": false,
+              "default": {}
+            },
+            "noncash": {
+              "type": "boolean",
+              "default": false
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "id",
+            "label",
+            "accounts",
+            "section",
+            "method"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "id": {
+              "$ref": "#/$defs/text"
+            },
+            "label": {
+              "$ref": "#/$defs/text"
+            },
+            "accounts": {
+              "type": "array",
+              "items": {
+                "$ref": "#/$defs/text"
+              },
+              "uniqueItems": true
+            },
+            "basis": {
+              "type": "string",
+              "default": ""
+            },
+            "section": {
+              "enum": [
+                "매출원가",
+                "판관비"
+              ]
+            },
+            "method": {
+              "const": "mixed"
+            },
+            "params": {
+              "type": "object",
+              "properties": {
+                "revenue_ids": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/$defs/text"
+                  },
+                  "minItems": 1,
+                  "uniqueItems": true
+                },
+                "rate": {
+                  "type": "number",
+                  "minimum": 0,
+                  "default": 0
+                },
+                "base_monthly": {
+                  "type": "number",
+                  "minimum": 0,
+                  "default": 0
+                },
+                "annual_growth": {
+                  "type": "number",
+                  "minimum": -1,
+                  "default": 0
+                },
+                "months": {
+                  "type": "array",
+                  "items": {
+                    "type": "integer",
+                    "minimum": 1,
+                    "maximum": 12
+                  },
+                  "uniqueItems": true,
+                  "minItems": 1
+                },
+                "role": {
+                  "$ref": "#/$defs/text"
+                }
+              },
+              "additionalProperties": false,
+              "required": [
+                "revenue_ids"
+              ]
+            },
+            "noncash": {
+              "type": "boolean",
+              "default": false
+            },
+            "follows_wage_raise": {
+              "type": "boolean",
+              "default": false
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "id",
+            "label",
+            "accounts",
+            "section",
+            "method",
+            "params"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "id": {
+              "$ref": "#/$defs/text"
+            },
+            "label": {
+              "$ref": "#/$defs/text"
+            },
+            "accounts": {
+              "type": "array",
+              "items": {
+                "$ref": "#/$defs/text"
+              },
+              "uniqueItems": true
+            },
+            "basis": {
+              "type": "string",
+              "default": ""
+            },
+            "section": {
+              "enum": [
+                "매출원가",
+                "판관비"
+              ]
+            },
+            "method": {
+              "const": "pct_of_line"
+            },
+            "params": {
+              "type": "object",
+              "properties": {
+                "line_ids": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/$defs/text"
+                  },
+                  "minItems": 1,
+                  "uniqueItems": true
+                },
+                "rate": {
+                  "type": "number",
+                  "minimum": 0,
+                  "default": 0
+                },
+                "months": {
+                  "type": "array",
+                  "items": {
+                    "type": "integer",
+                    "minimum": 1,
+                    "maximum": 12
+                  },
+                  "uniqueItems": true,
+                  "minItems": 1
+                }
+              },
+              "additionalProperties": false,
+              "required": [
+                "line_ids"
+              ]
+            },
+            "noncash": {
+              "type": "boolean",
+              "default": false
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "id",
+            "label",
+            "accounts",
+            "section",
+            "method",
+            "params"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "id": {
+              "$ref": "#/$defs/text"
+            },
+            "label": {
+              "$ref": "#/$defs/text"
+            },
+            "accounts": {
+              "type": "array",
+              "items": {
+                "$ref": "#/$defs/text"
+              },
+              "uniqueItems": true
+            },
+            "basis": {
+              "type": "string",
+              "default": ""
+            },
+            "section": {
+              "enum": [
+                "매출원가",
+                "판관비"
+              ]
+            },
+            "method": {
+              "const": "per_metric"
+            },
+            "params": {
+              "type": "object",
+              "properties": {
+                "metric": {
+                  "$ref": "#/$defs/text"
+                },
+                "unit_cost": {
+                  "anyOf": [
+                    {
+                      "type": "number",
+                      "minimum": 0
+                    },
+                    {
+                      "const": "actual"
+                    },
+                    {
+                      "type": "object",
+                      "propertyNames": {
+                        "$ref": "#/$defs/month"
+                      },
+                      "additionalProperties": {
+                        "type": "number",
+                        "minimum": 0
+                      },
+                      "minProperties": 1
+                    }
+                  ],
+                  "default": "actual"
+                },
+                "annual_growth": {
+                  "type": "number",
+                  "minimum": -1,
+                  "default": 0
+                }
+              },
+              "additionalProperties": false,
+              "required": [
+                "metric"
+              ]
+            },
+            "noncash": {
+              "type": "boolean",
+              "default": false
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "id",
+            "label",
+            "accounts",
+            "section",
+            "method",
+            "params"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "id": {
+              "$ref": "#/$defs/text"
+            },
+            "label": {
+              "$ref": "#/$defs/text"
+            },
+            "accounts": {
+              "type": "array",
+              "items": {
+                "$ref": "#/$defs/text"
+              },
+              "uniqueItems": true
+            },
+            "basis": {
+              "type": "string",
+              "default": ""
+            },
+            "section": {
+              "enum": [
+                "매출원가",
+                "판관비"
+              ]
+            },
+            "method": {
+              "const": "per_activity"
+            },
+            "params": {
+              "type": "object",
+              "properties": {
+                "base_lines": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/$defs/text"
+                  },
+                  "uniqueItems": true,
+                  "minItems": 1
+                },
+                "unit_cost": {
+                  "anyOf": [
+                    {
+                      "type": "number",
+                      "minimum": 0
+                    },
+                    {
+                      "const": "actual"
+                    }
+                  ],
+                  "default": "actual"
+                },
+                "annual_growth": {
+                  "type": "number",
+                  "minimum": -1,
+                  "default": 0
+                }
+              },
+              "additionalProperties": false,
+              "required": [
+                "base_lines"
+              ]
+            },
+            "noncash": {
+              "type": "boolean",
+              "default": false
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "id",
+            "label",
+            "accounts",
+            "section",
+            "method",
+            "params"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "id": {
+              "$ref": "#/$defs/text"
+            },
+            "label": {
+              "$ref": "#/$defs/text"
+            },
+            "accounts": {
+              "type": "array",
+              "items": {
+                "$ref": "#/$defs/text"
+              },
+              "uniqueItems": true
+            },
+            "basis": {
+              "type": "string",
+              "default": ""
+            },
+            "section": {
+              "enum": [
+                "매출원가",
+                "판관비"
+              ]
+            },
+            "method": {
+              "const": "consumption"
+            },
+            "params": {
+              "type": "object",
+              "properties": {
+                "metric": {
+                  "$ref": "#/$defs/text"
+                },
+                "efficiency": {
+                  "anyOf": [
+                    {
+                      "type": "number",
+                      "exclusiveMinimum": 0
+                    },
+                    {
+                      "type": "object",
+                      "propertyNames": {
+                        "$ref": "#/$defs/month"
+                      },
+                      "additionalProperties": {
+                        "type": "number",
+                        "exclusiveMinimum": 0
+                      },
+                      "minProperties": 1
+                    }
+                  ]
+                },
+                "price": {
+                  "anyOf": [
+                    {
+                      "type": "number",
+                      "minimum": 0
+                    },
+                    {
+                      "type": "object",
+                      "propertyNames": {
+                        "$ref": "#/$defs/month"
+                      },
+                      "additionalProperties": {
+                        "type": "number",
+                        "minimum": 0
+                      },
+                      "minProperties": 1
+                    }
+                  ]
+                },
+                "subsidy": {
+                  "anyOf": [
+                    {
+                      "type": "number",
+                      "minimum": 0
+                    },
+                    {
+                      "type": "object",
+                      "propertyNames": {
+                        "$ref": "#/$defs/month"
+                      },
+                      "additionalProperties": {
+                        "type": "number",
+                        "minimum": 0
+                      },
+                      "minProperties": 1
+                    }
+                  ],
+                  "default": 0
+                },
+                "subsidy_link": {
+                  "type": "object",
+                  "properties": {
+                    "threshold": {"type": "number", "minimum": 0},
+                    "rate": {"type": "number", "minimum": 0, "maximum": 1},
+                    "cap": {"type": "number", "minimum": 0},
+                    "eligible_share": {"type": "number", "minimum": 0, "maximum": 1},
+                    "baseline_amount": {"type": "number", "minimum": 0},
+                    "annual_rates": {
+                      "type": "object",
+                      "propertyNames": {"type": "string", "pattern": "^(?!0000)[0-9]{4}$"},
+                      "additionalProperties": {"type": "number", "minimum": 0, "maximum": 1}
+                    },
+                    "basis": {"type": "string"}
+                  },
+                  "required": ["threshold", "rate", "cap", "eligible_share", "baseline_amount"],
+                  "additionalProperties": false
+                },
+                "adjustments": {
+                  "type": "object",
+                  "propertyNames": {
+                    "$ref": "#/$defs/month"
+                  },
+                  "additionalProperties": {
+                    "type": "number"
+                  }
+                },
+                "actual_usage": {
+                  "type": "object",
+                  "propertyNames": {
+                    "$ref": "#/$defs/month"
+                  },
+                  "additionalProperties": {
+                    "type": "number",
+                    "minimum": 0
+                  },
+                  "default": {}
+                }
+              },
+              "additionalProperties": false,
+              "required": [
+                "metric",
+                "efficiency",
+                "price"
+              ]
+            },
+            "noncash": {
+              "type": "boolean",
+              "default": false
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "id",
+            "label",
+            "accounts",
+            "section",
+            "method",
+            "params"
+          ]
+        }
+      ]
+    },
+    "role": {
+      "type": "object",
+      "properties": {
+        "role": {
+          "$ref": "#/$defs/text"
+        },
+        "count": {
+          "type": "number",
+          "minimum": 0,
+          "default": 0
+        },
+        "monthly_cost": {
+          "type": "number",
+          "minimum": 0,
+          "default": 0
+        },
+        "start": {
+          "$ref": "#/$defs/month"
+        },
+        "end": {
+          "$ref": "#/$defs/month"
+        },
+        "raise_from": {
+          "$ref": "#/$defs/month"
+        },
+        "annual_raise": {
+          "type": "number",
+          "minimum": -1
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "role"
+      ]
+    },
+    "facility": {
+      "type": "object",
+      "properties": {
+        "facility": {
+          "$ref": "#/$defs/text"
+        },
+        "lender": {
+          "$ref": "#/$defs/text"
+        },
+        "type": {
+          "enum": [
+            "term",
+            "revolver",
+            "bond",
+            "lease"
+          ]
+        },
+        "balance": {
+          "type": "number",
+          "minimum": 0
+        },
+        "rate": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "maturity": {
+          "$ref": "#/$defs/month"
+        },
+        "note": {
+          "type": "string"
+        },
+        "at_maturity": {
+          "enum": [
+            "repay",
+            "rollover"
+          ]
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "facility"
+      ],
+      "anyOf": [
+        {
+          "type": "object",
+          "required": [
+            "lender",
+            "type",
+            "maturity"
+          ]
+        },
+        {
+          "type": "object",
+          "required": [
+            "at_maturity"
+          ]
+        }
+      ]
+    },
+    "repayment": {
+      "type": "object",
+      "properties": {
+        "facility": {
+          "$ref": "#/$defs/text"
+        },
+        "month": {
+          "$ref": "#/$defs/month"
+        },
+        "principal": {
+          "type": "number",
+          "minimum": 0,
+          "default": 0
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "facility",
+        "month"
+      ]
+    },
+    "scenario": {
+      "type": "object",
+      "properties": {
+        "multipliers": {
+          "type": "object",
+          "propertyNames": {
+            "$ref": "#/$defs/text"
+          },
+          "additionalProperties": {
+            "type": "number",
+            "minimum": 0
+          },
+          "default": {}
+        },
+        "additions": {
+          "type": "object",
+          "propertyNames": {
+            "$ref": "#/$defs/text"
+          },
+          "additionalProperties": {
+            "type": "number"
+          },
+          "default": {}
+        },
+        "basis": {
+          "type": "string",
+          "default": ""
+        },
+        "drivers": {
+          "type": "object",
+          "propertyNames": {
+            "$ref": "#/$defs/text"
+          },
+          "additionalProperties": {
+            "type": "object",
+            "properties": {
+              "new_multiplier": {
+                "type": "number",
+                "minimum": 0
+              },
+              "price_multiplier": {
+                "type": "number",
+                "minimum": 0
+              },
+              "exclude_unconfirmed": {
+                "type": "boolean"
+              },
+              "exclude_items": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/$defs/text"
+                },
+                "uniqueItems": true
+              },
+              "renewal_probability": {
+                "type": "number",
+                "minimum": 0,
+                "maximum": 1
+              },
+              "activity_multiplier": {
+                "type": "number",
+                "minimum": 0
+              },
+              "yield_multiplier": {
+                "type": "number",
+                "minimum": 0
+              },
+              "efficiency_multiplier": {
+                "type": "number",
+                "minimum": 0
+              },
+              "subsidy_multiplier": {
+                "type": "number",
+                "minimum": 0
+              }
+            },
+            "additionalProperties": false,
+            "minProperties": 1
+          },
+          "default": {}
+        },
+        "initiatives": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/text"
+          },
+          "uniqueItems": true
+        }
+      },
+      "additionalProperties": false,
+      "default": {}
+    },
+    "new_tax_credit": {
+      "type": "object",
+      "properties": {
+        "label": {
+          "$ref": "#/$defs/text"
+        },
+        "year": {
+          "type": "integer",
+          "minimum": 1900,
+          "maximum": 9999
+        },
+        "amount": {
+          "type": "number",
+          "minimum": 0
+        },
+        "minimum_tax_applies": {
+          "type": "boolean"
+        },
+        "rural_tax": {
+          "type": "boolean"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "label",
+        "amount",
+        "minimum_tax_applies",
+        "rural_tax"
+      ]
+    }
+  }
+}
